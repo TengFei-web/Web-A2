@@ -1,6 +1,6 @@
 const mysql = require('mysql2/promise');
 
-// 数据库连接配置
+// Database connection configuration
 const dbConfig = {
     host: 'localhost',
     user: 'root',
@@ -10,42 +10,42 @@ const dbConfig = {
     connectTimeout: 60000
 };
 
-// 创建连接池
+// Create connection pool
 const pool = mysql.createPool(dbConfig);
 
-// 测试数据库连接
+// Test database connection
 async function testConnection() {
     try {
         const connection = await pool.getConnection();
-        console.log('✅ 成功连接到MySQL数据库: charityevents_db');
+        console.log('✅ Successfully connected to MySQL database: charityevents_db');
         
         const [rows] = await connection.execute('SELECT COUNT(*) as event_count FROM events');
-        console.log(`📊 数据库包含 ${rows[0].event_count} 个活动`);
+        console.log(`📊 The database contains ${rows[0].event_count} events`);
         
         connection.release();
         return true;
     } catch (error) {
-        console.error('❌ 数据库连接失败:', error.message);
-        console.log('💡 请检查:');
-        console.log('   1. MySQL服务是否运行');
-        console.log('   2. 数据库连接配置是否正确');
-        console.log('   3. charityevents_db数据库是否存在');
+        console.error('❌ Database connection failed:', error.message);
+        console.log('💡 Please check:');
+        console.log('   1. Whether the MySQL service is running');
+        console.log('   2. Whether the database connection configuration is correct');
+        console.log('   3. Whether the charityevents_db database exists');
         return false;
     }
 }
 
-// 执行查询
+// Execute query
 async function executeQuery(sql, params = []) {
     try {
         const [rows] = await pool.execute(sql, params);
         return rows;
     } catch (error) {
-        console.error('❌ 查询执行失败:', error.message);
+        console.error('❌ Query execution failed:', error.message);
         throw error;
     }
 }
 
-// 正确导出（不要使用export default）
+// Export correctly (do not use export default)
 module.exports = {
     pool,
     testConnection,
