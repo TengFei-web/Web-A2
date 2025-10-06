@@ -1,4 +1,4 @@
-const { testConnection, executeQuery } = require('./event_db').default;
+import { testConnection, executeQuery } from './event_db';
 
 async function runTests() {
     console.log('🧪 测试数据库连接...');

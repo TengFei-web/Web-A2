@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details - Charity Events</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-icon">❤️</span>
+                Charity Events
+            </a>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="search.html" class="nav-link">Search Events</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div id="event-detail-container">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>Loading event details...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 注册模态框 -->
+    <div id="register-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div class="modal-header">
+                <h2>Event Registration</h2>
+            </div>
+            <div class="modal-body">
+                <div class="under-construction">
+                    <div class="construction-icon">🚧</div>
+                    <h3>Under Construction</h3>
+                    <p>This feature is currently under development and will be available soon.</p>
+                    <p>Thank you for your interest in supporting our charity event!</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="close-modal-btn" class="btn btn-primary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 Charity Events. PROG2002 Assessment 2.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/event-details.js"></script>
+</body>
+</html>
