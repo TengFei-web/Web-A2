@@ -142,10 +142,12 @@ class SearchPage {
 
     displaySearchResults(events) {
         const container = document.getElementById('search-results');
+        const summary = document.getElementById('results-summary');
         
         if (!events || events.length === 0) {
             container.innerHTML = `
-                <div class="no-results">
+                <div class="empty-state">
+                    <div class="empty-icon">🔍</div>
                     <h3>No Events Found</h3>
                     <p>Try adjusting your search criteria or browse all events on the home page.</p>
                     <button onclick="window.location.href='index.html'" class="btn btn-primary">
@@ -153,9 +155,11 @@ class SearchPage {
                     </button>
                 </div>
             `;
+            summary.textContent = 'No events found matching your criteria';
             return;
         }
         
+        summary.textContent = `Found ${events.length} event${events.length > 1 ? 's' : ''} matching your search`;
         container.innerHTML = events.map(event => this.createEventCard(event)).join('');
     }
 
@@ -168,25 +172,91 @@ class SearchPage {
             day: 'numeric'
         });
 
+        // 获取图片URL和CSS类
+        const { imageUrl, imageClass } = this.getEventImageInfo(event.category_name);
+
         return `
             <div class="event-card" data-event-id="${event.id}">
-                <span class="event-category">${this.escapeHtml(event.category_name)}</span>
-                <h4>${this.escapeHtml(event.name)}</h4>
-                <div class="event-details">
-                    <p class="event-date">📅 ${formattedDate}</p>
-                    <p class="event-location">📍 ${this.escapeHtml(event.location)}</p>
-                    <p class="event-description">${this.escapeHtml(event.short_description || 'Join us for this charity event!')}</p>
+                <div class="event-image ${imageClass}">
+                    <img src="${imageUrl}" alt="${this.escapeHtml(event.name)}" 
+                         onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=250&fit=crop'">
+                    <span class="event-category ${this.getCategoryClass(event.category_name)}">
+                        ${this.escapeHtml(event.category_name)}
+                    </span>
                 </div>
-                <div class="event-footer">
-                    <div class="event-price">
-                        ${event.ticket_type === 'free' ? 'FREE' : `$${event.ticket_price}`}
+                <div class="event-content">
+                    <h3>${this.escapeHtml(event.name)}</h3>
+                    <div class="event-meta">
+                        <div class="event-date">
+                            <span class="meta-icon">📅</span>
+                            ${formattedDate}
+                        </div>
+                        <div class="event-location">
+                            <span class="meta-icon">📍</span>
+                            ${this.escapeHtml(event.location)}
+                        </div>
                     </div>
-                    <button class="view-details-btn" onclick="SearchPage.viewEventDetails(${event.id})">
-                        View Details
-                    </button>
+                    <p class="event-description">
+                        ${this.escapeHtml(event.short_description || 'Join us for this charity event!')}
+                    </p>
+                    <div class="event-footer">
+                        <div class="event-price">
+                            ${event.ticket_type === 'free' ? 'FREE' : `$${event.ticket_price}`}
+                        </div>
+                        <button class="view-details-btn" onclick="SearchPage.viewEventDetails(${event.id})">
+                            View Details
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
+    }
+
+    getEventImageInfo(categoryName) {
+        const imageMap = {
+            'Fun Run': {
+                url: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=400&h=250&fit=crop',
+                class: 'run'
+            },
+            'Gala Dinner': {
+                url: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&h=250&fit=crop',
+                class: 'gala'
+            },
+            'Silent Auction': {
+                url: 'https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=400&h=250&fit=crop',
+                class: 'auction'
+            },
+            'Concert': {
+                url: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=400&h=250&fit=crop',
+                class: 'concert'
+            },
+            'Workshop': {
+                url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=250&fit=crop',
+                class: 'workshop'
+            },
+            'Sports Tournament': {
+                url: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&h=250&fit=crop',
+                class: 'sports'
+            }
+        };
+        
+        return imageMap[categoryName] || {
+            url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=250&fit=crop',
+            class: 'default'
+        };
+    }
+
+    getCategoryClass(categoryName) {
+        const classMap = {
+            'Fun Run': 'run',
+            'Gala Dinner': 'gala',
+            'Silent Auction': 'auction',
+            'Concert': 'concert',
+            'Workshop': 'workshop',
+            'Sports Tournament': 'sports'
+        };
+        
+        return classMap[categoryName] || 'default';
     }
 
     static viewEventDetails(eventId) {
@@ -196,20 +266,32 @@ class SearchPage {
 
     clearFilters() {
         document.getElementById('search-form').reset();
-        document.getElementById('search-results').innerHTML = 
-            '<div class="loading">Use the form above to search for events</div>';
+        document.getElementById('search-results').innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <h3>Ready to Search</h3>
+                <p>Use the search form above to find charity events that match your criteria.</p>
+            </div>
+        `;
+        document.getElementById('results-summary').textContent = 'Use the search form to find events';
         this.currentResults = [];
     }
 
     showLoading(message) {
         const container = document.getElementById('search-results');
-        container.innerHTML = `<div class="loading">${message}</div>`;
+        container.innerHTML = `
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>${message}</p>
+            </div>
+        `;
     }
 
     showError(message) {
         const container = document.getElementById('search-results');
         container.innerHTML = `
-            <div class="error">
+            <div class="error-state">
+                <div class="error-icon">❌</div>
                 <h3>Search Error</h3>
                 <p>${message}</p>
                 <button onclick="window.location.reload()" class="btn btn-primary">Try Again</button>

@@ -204,3 +204,126 @@ class EventDetailsPage {
 document.addEventListener('DOMContentLoaded', function() {
     window.eventDetailsPage = new EventDetailsPage();
 });
+
+
+
+
+
+
+
+// 在 displayEventDetails 方法中添加图片显示
+displayEventDetails(event) ;{
+    const container = document.getElementById('event-detail-container');
+    
+    const progressPercentage = event.goal_amount > 0 ? 
+        Math.min(100, (event.current_amount / event.goal_amount) * 100) : 0;
+    
+    const eventDate = new Date(event.date_time);
+    const formattedDateTime = eventDate.toLocaleDateString('en-AU', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    // 获取事件图片
+    const { imageUrl } = this.getEventImageInfo(event.category_name);
+
+    container.innerHTML = `
+        <div class="event-detail-card">
+            <div class="event-detail-image">
+                <img src="${imageUrl}" alt="${this.escapeHtml(event.name)}" 
+                     onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop'">
+                <div class="image-overlay">
+                    <span class="event-category">${this.escapeHtml(event.category_name)}</span>
+                </div>
+            </div>
+            
+            <div class="event-header">
+                <h1 class="event-title">${this.escapeHtml(event.name)}</h1>
+                <div class="event-meta">
+                    <div class="meta-item">📅 ${formattedDateTime}</div>
+                    <div class="meta-item">📍 ${this.escapeHtml(event.location)}</div>
+                    <div class="meta-item">💰 ${event.ticket_type === 'free' ? 'Free Entry' : `$${event.ticket_price}`}</div>
+                </div>
+            </div>
+            
+            <div class="event-content">
+                <section class="event-description">
+                    <h3>About This Event</h3>
+                    <p>${this.escapeHtml(event.full_description || event.short_description || 'No description available for this event.')}</p>
+                </section>
+                
+                ${event.address ? `
+                    <section class="venue-details">
+                        <h3>Venue Details</h3>
+                        <p>${this.escapeHtml(event.address)}</p>
+                    </section>
+                ` : ''}
+                
+                ${event.max_attendees ? `
+                    <section class="event-capacity">
+                        <h3>Event Capacity</h3>
+                        <p>Maximum attendees: ${event.max_attendees}</p>
+                    </section>
+                ` : ''}
+            </div>
+            
+            ${event.goal_amount > 0 ? `
+                <section class="progress-section">
+                    <h3>Fundraising Progress</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progressPercentage}%"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span>Raised: $${event.current_amount.toLocaleString()}</span>
+                        <span>Goal: $${event.goal_amount.toLocaleString()}</span>
+                    </div>
+                    <p class="progress-percentage">Progress: ${progressPercentage.toFixed(1)}%</p>
+                </section>
+            ` : ''}
+            
+            <div class="action-section">
+                <button class="register-btn" id="register-btn">
+                    Register for This Event
+                </button>
+                <button class="back-btn" onclick="window.history.back()">
+                    ← Back to Events
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // 添加注册按钮事件监听
+    document.getElementById('register-btn').addEventListener('click', () => this.showRegistrationModal());
+}
+
+// 添加获取图片信息的方法
+getEventImageInfo(categoryName) ;{
+    const imageMap = {
+        'Fun Run': {
+            url: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=800&h=400&fit=crop'
+        },
+        'Gala Dinner': {
+            url: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&h=400&fit=crop'
+        },
+        'Silent Auction': {
+            url: 'https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=800&h=400&fit=crop'
+        },
+        'Concert': {
+            url: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&h=400&fit=crop'
+        },
+        'Workshop': {
+            url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=400&fit=crop'
+        },
+        'Sports Tournament': {
+            url: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800&h=400&fit=crop'
+        }
+    };
+    
+    return imageMap[categoryName] || {
+        url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop'
+    };
+}

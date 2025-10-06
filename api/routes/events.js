@@ -102,6 +102,7 @@ router.get('/events/active', async (req, res) => {
             WHERE e.is_active = TRUE 
             AND e.date_time >= NOW()
             ORDER BY e.date_time ASC
+            LIMIT 6
         `;
         
         const events = await executeQuery(query);
