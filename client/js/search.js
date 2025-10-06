@@ -1,25 +1,23 @@
-// 搜索页面功能 - 使用新的RESTful API
-class SearchPage {
+// 主页功能 - 使用新的RESTful API
+class HomePage {
     constructor() {
-        this.categories = [];
-        this.currentResults = [];
         this.init();
     }
 
     async init() {
         try {
-            await this.loadCategories();
-            this.setupEventListeners();
-            this.loadSearchSuggestions();
+            await this.loadActiveEvents();
         } catch (error) {
-            console.error('Search page initialization failed:', error);
-            this.showError('Failed to initialize search page.');
+            console.error('Home page initialization failed:', error);
+            this.showError('Failed to initialize page. Please refresh and try again.');
         }
     }
 
-    async loadCategories() {
+    async loadActiveEvents() {
         try {
-            const response = await fetch('/api/categories');
+            this.showLoading('Loading upcoming charity events...');
+            
+            const response = await fetch('/api/events/active');
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -28,235 +26,66 @@ class SearchPage {
             const result = await response.json();
             
             if (!result.success) {
-                throw new Error(result.error || 'Failed to load categories');
+                throw new Error(result.error || 'Failed to load events');
             }
             
-            this.categories = result.data;
-            this.populateCategoryDropdown();
+            this.displayEvents(result.data);
             
         } catch (error) {
-            console.error('Error loading categories:', error);
-            this.showError('Failed to load categories.');
+            console.error('Error loading events:', error);
+            this.showError(`Failed to load events: ${error.message}`);
         }
     }
 
-    populateCategoryDropdown() {
-        const categorySelect = document.getElementById('category');
-        categorySelect.innerHTML = '<option value="">All Categories</option>';
-        
-        this.categories.forEach(category => {
-            const option = document.createElement('option');
-            option.value = category.id;
-            option.textContent = category.name;
-            categorySelect.appendChild(option);
-        });
-    }
-
-    async loadSearchSuggestions() {
-        try {
-            const response = await fetch('/api/events/search/suggestions');
-            
-            if (response.ok) {
-                const result = await response.json();
-                if (result.success) {
-                    this.setupLocationAutocomplete(result.data.locations);
-                }
-            }
-        } catch (error) {
-            console.error('Error loading search suggestions:', error);
-        }
-    }
-
-    setupLocationAutocomplete(locations) {
-        const locationInput = document.getElementById('location');
-        const datalist = document.createElement('datalist');
-        datalist.id = 'location-suggestions';
-        
-        locations.forEach(location => {
-            const option = document.createElement('option');
-            option.value = location;
-            datalist.appendChild(option);
-        });
-        
-        document.body.appendChild(datalist);
-        locationInput.setAttribute('list', 'location-suggestions');
-    }
-
-    setupEventListeners() {
-        const searchForm = document.getElementById('search-form');
-        const clearBtn = document.getElementById('clear-btn');
-        
-        searchForm.addEventListener('submit', (event) => this.handleSearch(event));
-        clearBtn.addEventListener('click', () => this.clearFilters());
-        
-        // 实时搜索（可选功能）
-        const locationInput = document.getElementById('location');
-        locationInput.addEventListener('input', () => this.debouncedSearch());
-    }
-
-    async handleSearch(event) {
-        event.preventDefault();
-        
-        const formData = new FormData(event.target);
-        const searchCriteria = {
-            category: formData.get('category'),
-            location: formData.get('location'),
-            date: formData.get('date'),
-            active: 'true' // 只搜索活跃活动
-        };
-        
-        await this.searchEvents(searchCriteria);
-    }
-
-    async searchEvents(criteria) {
-        try {
-            this.showLoading('Searching for events...');
-            
-            // 构建查询参数
-            const params = new URLSearchParams();
-            if (criteria.category) params.append('category', criteria.category);
-            if (criteria.location) params.append('location', criteria.location);
-            if (criteria.date) params.append('date', criteria.date);
-            if (criteria.active) params.append('active', criteria.active);
-            
-            const response = await fetch(`/api/events?${params.toString()}`);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const result = await response.json();
-            
-            if (!result.success) {
-                throw new Error(result.error || 'Search failed');
-            }
-            
-            this.currentResults = result.data;
-            this.displaySearchResults(result.data);
-            
-        } catch (error) {
-            console.error('Error searching events:', error);
-            this.showError(`Search failed: ${error.message}`);
-        }
-    }
-
-    displaySearchResults(events) {
-        const container = document.getElementById('search-results');
-        const summary = document.getElementById('results-summary');
+    displayEvents(events) {
+        const container = document.getElementById('events-container');
         
         if (!events || events.length === 0) {
             container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">🔍</div>
-                    <h3>No Events Found</h3>
-                    <p>Try adjusting your search criteria or browse all events on the home page.</p>
-                    <button onclick="window.location.href='index.html'" class="btn btn-primary">
-                        View All Events
-                    </button>
+                <div class="no-events">
+                    <h3>No Upcoming Events</h3>
+                    <p>Check back later for new charity events!</p>
                 </div>
             `;
-            summary.textContent = 'No events found matching your criteria';
             return;
         }
         
-        summary.textContent = `Found ${events.length} event${events.length > 1 ? 's' : ''} matching your search`;
         container.innerHTML = events.map(event => this.createEventCard(event)).join('');
     }
 
     createEventCard(event) {
         const eventDate = new Date(event.date_time);
         const formattedDate = eventDate.toLocaleDateString('en-AU', {
-            weekday: 'short',
+            weekday: 'long',
             year: 'numeric',
-            month: 'short',
+            month: 'long',
             day: 'numeric'
         });
-
-        // 获取图片URL和CSS类
-        const { imageUrl, imageClass } = this.getEventImageInfo(event.category_name);
+        const formattedTime = eventDate.toLocaleTimeString('en-AU', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
 
         return `
             <div class="event-card" data-event-id="${event.id}">
-                <div class="event-image ${imageClass}">
-                    <img src="${imageUrl}" alt="${this.escapeHtml(event.name)}" 
-                         onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=250&fit=crop'">
-                    <span class="event-category ${this.getCategoryClass(event.category_name)}">
-                        ${this.escapeHtml(event.category_name)}
-                    </span>
+                <span class="event-category">${this.escapeHtml(event.category_name)}</span>
+                <h4>${this.escapeHtml(event.name)}</h4>
+                <div class="event-details">
+                    <p class="event-date">📅 ${formattedDate}</p>
+                    <p class="event-time">⏰ ${formattedTime}</p>
+                    <p class="event-location">📍 ${this.escapeHtml(event.location)}</p>
+                    <p class="event-description">${this.escapeHtml(event.short_description || 'Join us for this wonderful charity event!')}</p>
                 </div>
-                <div class="event-content">
-                    <h3>${this.escapeHtml(event.name)}</h3>
-                    <div class="event-meta">
-                        <div class="event-date">
-                            <span class="meta-icon">📅</span>
-                            ${formattedDate}
-                        </div>
-                        <div class="event-location">
-                            <span class="meta-icon">📍</span>
-                            ${this.escapeHtml(event.location)}
-                        </div>
+                <div class="event-footer">
+                    <div class="event-price">
+                        ${event.ticket_type === 'free' ? 'FREE ENTRY' : `$${event.ticket_price}`}
                     </div>
-                    <p class="event-description">
-                        ${this.escapeHtml(event.short_description || 'Join us for this charity event!')}
-                    </p>
-                    <div class="event-footer">
-                        <div class="event-price">
-                            ${event.ticket_type === 'free' ? 'FREE' : `$${event.ticket_price}`}
-                        </div>
-                        <button class="view-details-btn" onclick="SearchPage.viewEventDetails(${event.id})">
-                            View Details
-                        </button>
-                    </div>
+                    <button class="view-details-btn" onclick="HomePage.viewEventDetails(${event.id})">
+                        View Details & Register
+                    </button>
                 </div>
             </div>
         `;
-    }
-
-    getEventImageInfo(categoryName) {
-        const imageMap = {
-            'Fun Run': {
-                url: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=400&h=250&fit=crop',
-                class: 'run'
-            },
-            'Gala Dinner': {
-                url: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&h=250&fit=crop',
-                class: 'gala'
-            },
-            'Silent Auction': {
-                url: 'https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=400&h=250&fit=crop',
-                class: 'auction'
-            },
-            'Concert': {
-                url: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=400&h=250&fit=crop',
-                class: 'concert'
-            },
-            'Workshop': {
-                url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=250&fit=crop',
-                class: 'workshop'
-            },
-            'Sports Tournament': {
-                url: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&h=250&fit=crop',
-                class: 'sports'
-            }
-        };
-        
-        return imageMap[categoryName] || {
-            url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=250&fit=crop',
-            class: 'default'
-        };
-    }
-
-    getCategoryClass(categoryName) {
-        const classMap = {
-            'Fun Run': 'run',
-            'Gala Dinner': 'gala',
-            'Silent Auction': 'auction',
-            'Concert': 'concert',
-            'Workshop': 'workshop',
-            'Sports Tournament': 'sports'
-        };
-        
-        return classMap[categoryName] || 'default';
     }
 
     static viewEventDetails(eventId) {
@@ -264,35 +93,16 @@ class SearchPage {
         window.location.href = 'event-details.html';
     }
 
-    clearFilters() {
-        document.getElementById('search-form').reset();
-        document.getElementById('search-results').innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">🔍</div>
-                <h3>Ready to Search</h3>
-                <p>Use the search form above to find charity events that match your criteria.</p>
-            </div>
-        `;
-        document.getElementById('results-summary').textContent = 'Use the search form to find events';
-        this.currentResults = [];
-    }
-
     showLoading(message) {
-        const container = document.getElementById('search-results');
-        container.innerHTML = `
-            <div class="loading-state">
-                <div class="loading-spinner"></div>
-                <p>${message}</p>
-            </div>
-        `;
+        const container = document.getElementById('events-container');
+        container.innerHTML = `<div class="loading">${message}</div>`;
     }
 
     showError(message) {
-        const container = document.getElementById('search-results');
+        const container = document.getElementById('events-container');
         container.innerHTML = `
-            <div class="error-state">
-                <div class="error-icon">❌</div>
-                <h3>Search Error</h3>
+            <div class="error">
+                <h3>Oops! Something went wrong</h3>
                 <p>${message}</p>
                 <button onclick="window.location.reload()" class="btn btn-primary">Try Again</button>
             </div>
@@ -308,33 +118,9 @@ class SearchPage {
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
     }
-
-    // 防抖函数用于实时搜索
-    debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    debouncedSearch = this.debounce(() => {
-        const formData = new FormData(document.getElementById('search-form'));
-        const criteria = {
-            category: formData.get('category'),
-            location: formData.get('location'),
-            date: formData.get('date'),
-            active: 'true'
-        };
-        this.searchEvents(criteria);
-    }, 500);
 }
 
-// 初始化搜索页面
+// 初始化主页
 document.addEventListener('DOMContentLoaded', function() {
-    window.searchPage = new SearchPage();
+    window.homePage = new HomePage();
 });

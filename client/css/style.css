@@ -1253,6 +1253,13 @@ a:focus-visible {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+     /* 添加标准属性以实现兼容性 */
+    display: -moz-box;
+    -moz-line-clamp: 2;
+    -moz-box-orient: vertical;
+    display: box;
+    line-clamp: 2;
+    box-orient: vertical;
 }
 
 .event-footer {
@@ -1313,165 +1320,478 @@ a:focus-visible {
 
 
 
-/* ===== 事件详情页面图片样式 ===== */
-.event-detail-image {
-    position: relative;
-    width: 100%;
-    height: 300px;
-    overflow: hidden;
-    border-radius: 16px 16px 0 0;
-}
-
-.event-detail-image img {
+/* 事件图片占位符样式 */
+.event-image-placeholder {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-}
-
-.image-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.6));
     display: flex;
-    align-items: flex-end;
-    padding: 1.5rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    color: white;
+    border-radius: var(--radius-lg);
 }
 
-.image-overlay .event-category {
-    background: rgba(255, 255, 255, 0.95);
-    color: #2c3e50;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.875rem;
+.placeholder-icon {
+    font-size: var(--text-4xl);
+    margin-bottom: var(--space-2);
 }
 
-.event-detail-card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    margin-bottom: 2rem;
+.placeholder-text {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    text-align: center;
+    opacity: 0.9;
+}
+
+/* 不同类型事件的背景颜色 */
+.event-image.run .event-image-placeholder {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+.event-image.gala .event-image-placeholder {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+.event-image.auction .event-image-placeholder {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+.event-image.concert .event-image-placeholder {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+}
+.event-image.workshop .event-image-placeholder {
+    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+}
+.event-image.sports .event-image-placeholder {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+}
+.event-image.yoga .event-image-placeholder {
+    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+}
+.event-image.default .event-image-placeholder {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+
+
+
+
+/* ===== 事件详情页面样式 ===== */
+.event-detail-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.event-main-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 
 .event-header {
-    padding: 2rem;
-    border-bottom: 1px solid #f1f3f4;
+    border-bottom: 2px solid #f1f3f4;
+    padding-bottom: 1.5rem;
 }
 
 .event-title {
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: 700;
     color: #2c3e50;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
 }
 
-.event-meta {
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
+.event-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
 }
 
 .meta-item {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border-left: 4px solid #667eea;
+}
+
+.meta-icon {
+    font-size: 1.5rem;
+    margin-top: 0.25rem;
+}
+
+.meta-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.meta-content strong {
+    color: #2c3e50;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.meta-content span {
     color: #6c757d;
     font-weight: 500;
 }
 
-.event-content {
+.address {
+    font-size: 0.875rem;
+    color: #868e96 !important;
+    font-style: italic;
+}
+
+/* 描述部分 */
+.description-section {
+    background: white;
     padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.event-content section {
-    margin-bottom: 2rem;
-}
-
-.event-content h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
+.description-section h2 {
     color: #2c3e50;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.event-description {
+    line-height: 1.8;
+    color: #6c757d;
+    font-size: 1.1rem;
+}
+
+/* 进度部分 */
+.progress-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.progress-section h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.progress-card {
+    text-align: center;
+}
+
+.progress-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.progress-stat {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-amount {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.stat-percentage {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #27ae60;
+}
+
+.progress-bar-large {
+    width: 100%;
+    height: 12px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
     margin-bottom: 1rem;
 }
 
-.event-content p {
-    line-height: 1.7;
+.progress-fill-large {
+    height: 100%;
+    background: linear-gradient(90deg, #27ae60, #2ecc71);
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+.progress-description {
     color: #6c757d;
+    font-style: italic;
 }
 
-.progress-section {
-    padding: 2rem;
-    background: #f8f9fa;
-    border-radius: 12px;
-    margin: 0 2rem 2rem;
-}
-
-.action-section {
-    padding: 0 2rem 2rem;
+/* 侧边栏 */
+.event-sidebar {
     display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
-.register-btn {
-    padding: 1rem 2rem;
+.ticket-card, .quick-info-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ticket-card h3, .quick-info-card h4 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+}
+
+.ticket-price {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
     background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 12px;
+    color: white;
+}
+
+.free-badge {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.price-amount {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.price-type {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.ticket-features h4 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: #495057;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+.feature-list li {
+    padding: 0.5rem 0;
+    color: #6c757d;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.feature-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #27ae60;
+    font-weight: bold;
+}
+
+.registration-cta {
+    text-align: center;
+}
+
+.register-btn-primary {
+    width: 100%;
+    padding: 1.25rem 2rem;
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
+    font-size: 1.125rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
-.register-btn:hover {
+.register-btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 8px 25px rgba(39, 174, 96, 0.3);
 }
 
-.back-btn {
-    padding: 1rem 2rem;
-    background: #6c757d;
-    color: white;
-    border: none;
+.btn-icon {
+    font-size: 1.25rem;
+}
+
+.registration-note {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: #6c757d;
+    text-align: center;
+}
+
+/* 快速信息 */
+.info-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
     border-radius: 8px;
+}
+
+.info-icon {
+    font-size: 1.25rem;
+}
+
+.info-text {
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+/* 注册表单 */
+.registration-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-label {
     font-weight: 600;
-    cursor: pointer;
+    color: #2c3e50;
+    font-size: 0.9rem;
+}
+
+.form-input, .form-select, .form-textarea {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
     transition: all 0.3s ease;
 }
 
-.back-btn:hover {
-    background: #5a6268;
-    transform: translateY(-2px);
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.checkbox-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+}
+
+.checkbox-group label {
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+.text-link {
+    color: #667eea;
+    text-decoration: none;
+}
+
+.text-link:hover {
+    text-decoration: underline;
+}
+
+/* 响应式设计 */
+@media (max-width: 968px) {
+    .event-detail-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+    
+    .event-title {
+        font-size: 2rem;
+    }
+    
+    .event-meta-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 768px) {
-    .event-detail-image {
-        height: 200px;
+    .event-detail-content {
+        padding: 1rem;
     }
     
+    .event-title {
+        font-size: 1.75rem;
+    }
+    
+    .progress-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .description-section,
+    .progress-section,
+    .ticket-card,
+    .quick-info-card {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
     .event-title {
         font-size: 1.5rem;
     }
     
-    .event-meta {
+    .meta-item {
         flex-direction: column;
+        text-align: center;
         gap: 0.5rem;
     }
     
-    .event-header,
-    .event-content,
-    .progress-section,
-    .action-section {
-        padding: 1.5rem;
-    }
-    
-    .action-section {
-        flex-direction: column;
+    .meta-icon {
+        align-self: center;
     }
 }
