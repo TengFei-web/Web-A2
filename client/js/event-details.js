@@ -73,16 +73,13 @@ class EventDetailsPage {
             minute: '2-digit'
         });
 
-        // 获取事件图片
-        const { imageUrl } = this.getEventImageInfo(event);
-
         container.innerHTML = `
             <div class="event-detail-card">
-                <!-- 事件图片 -->
-                <div class="event-detail-image">
-                    <img src="${imageUrl}" alt="${this.escapeHtml(event.name)}" 
-                         onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop'">
-                    <div class="image-overlay">
+                <!-- 事件图片占位符 -->
+                <div class="event-detail-image-placeholder ${this.getCategoryClass(event.category_name)}">
+                    <div class="image-placeholder-content">
+                        <span class="placeholder-icon">🎗️</span>
+                        <span class="placeholder-text">${this.escapeHtml(event.category_name)}</span>
                         <span class="event-category">${this.escapeHtml(event.category_name)}</span>
                     </div>
                 </div>
@@ -222,6 +219,20 @@ class EventDetailsPage {
         document.getElementById('register-btn').addEventListener('click', () => this.showRegistrationModal());
     }
 
+    getCategoryClass(categoryName) {
+        const classMap = {
+            'Fun Run': 'run',
+            'Gala Dinner': 'gala',
+            'Silent Auction': 'auction',
+            'Concert': 'concert',
+            'Workshop': 'workshop',
+            'Sports Tournament': 'sports',
+            'Yoga': 'yoga'
+        };
+        
+        return classMap[categoryName] || 'default';
+    }
+
     getEventPurpose(event) {
         const purposes = {
             'Fun Run': 'Supporting community health and fitness initiatives',
@@ -285,39 +296,6 @@ class EventDetailsPage {
         };
         
         return dressCodes[event.category_name] || 'Casual';
-    }
-
-    getEventImageInfo(event) {
-        const imageMap = {
-            1: { // Annual Charity Run 2025
-                url: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=800&h=400&fit=crop'
-            },
-            2: { // Gala Dinner for Children Hospital
-                url: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&h=400&fit=crop'
-            },
-            3: { // Art for Heart Silent Auction
-                url: 'https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=800&h=400&fit=crop'
-            },
-            4: { // Rock for Rescue Concert
-                url: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&h=400&fit=crop'
-            },
-            5: { // Coding for Kids Workshop
-                url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=400&fit=crop'
-            },
-            6: { // Charity Basketball Tournament
-                url: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800&h=400&fit=crop'
-            },
-            7: { // Winter Gala for Homeless Shelter
-                url: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=800&h=400&fit=crop'
-            },
-            8: { // Sunset Yoga for Mental Health
-                url: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&h=400&fit=crop'
-            }
-        };
-        
-        return imageMap[event.id] || {
-            url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop'
-        };
     }
 
     setupModal() {

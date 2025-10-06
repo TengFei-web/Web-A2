@@ -1,43 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Charity Events - Homepage</title>
+    <title>慈善活动 - 主页</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <!-- 导航栏 -->
     <nav class="navbar">
-        <!-- Navigation code remains unchanged -->
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-icon">🎗️</span>
+                CharityEvents
+            </a>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link" aria-current="page">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="search.html" class="nav-link">Search Events</a>
+                </li>
+
+            </ul>
+        </div>
     </nav>
 
+
     <main class="main-content">
-        <!-- Hero section -->
+        <!-- 英雄区域 -->
         <section class="hero">
-            <!-- Hero section content -->
+            <!-- 英雄区域内容 -->
         </section>
 
-        <!-- Organization information -->
+        <!-- 组织信息 -->
         <section class="organization-info">
-            <!-- Organization information content -->
+            <!-- 组织信息内容 -->
         </section>
 
-        <!-- Events list section - this div must exist -->
+        <!-- 活动列表区域 - 这个div必须存在 -->
         <section id="events" class="events-section">
             <div class="container">
                 <div class="section-header">
-                    <h2 class="section-title">Upcoming Charity Events</h2>
+                    <h2 class="section-title">The upcoming charity event</h2>
                     <p class="section-subtitle">
-                        Join our upcoming events to make a positive change in the community. All proceeds directly support our charity projects.
+                        Join our upcoming event and bring positive change to the community. All profits directly support our charitable projects.
                     </p>
                 </div>
                 
-                <!-- This div is where JavaScript inserts content -->
+                <!-- 这个div是JavaScript插入内容的地方 -->
                 <div id="events-container" class="events-grid">
-                    <!-- JavaScript will dynamically insert event cards here -->
+                    <!-- JavaScript会在这里动态插入活动卡片 -->
                     <div class="loading-state">
                         <div class="loading-spinner"></div>
-                        <p>Loading events...</p>
+                        <p>Loading activity ..</p>
                     </div>
                 </div>
             </div>
@@ -45,11 +61,26 @@
     </main>
 
     <footer class="footer">
-        <!-- Footer code -->
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Charity Events</h3>
+                    <p>Connecting communities through meaningful events.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <div class="footer-links">
+                        <a href="index.html">Home</a>
+                        <a href="search.html">Search Events</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Charity Events. PROG2002 Assessment 2.</p>
+            </div>
+        </div>
     </footer>
 
-    <!-- Ensure this script tag is at the bottom of the body -->
+    <!-- 确保这个script标签在body底部 -->
     <script src="js/home.js"></script>
-
-</html>
     

@@ -1320,57 +1320,6 @@ a:focus-visible {
 
 
 
-/* 事件图片占位符样式 */
-.event-image-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
-    color: white;
-    border-radius: var(--radius-lg);
-}
-
-.placeholder-icon {
-    font-size: var(--text-4xl);
-    margin-bottom: var(--space-2);
-}
-
-.placeholder-text {
-    font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
-    text-align: center;
-    opacity: 0.9;
-}
-
-/* 不同类型事件的背景颜色 */
-.event-image.run .event-image-placeholder {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-.event-image.gala .event-image-placeholder {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-}
-.event-image.auction .event-image-placeholder {
-    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-}
-.event-image.concert .event-image-placeholder {
-    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-}
-.event-image.workshop .event-image-placeholder {
-    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-}
-.event-image.sports .event-image-placeholder {
-    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-}
-.event-image.yoga .event-image-placeholder {
-    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-}
-.event-image.default .event-image-placeholder {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
 
 
 

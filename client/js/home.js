@@ -68,24 +68,57 @@ class HomePage {
 
         return `
             <div class="event-card" data-event-id="${event.id}">
-                <span class="event-category">${this.escapeHtml(event.category_name)}</span>
-                <h4>${this.escapeHtml(event.name)}</h4>
-                <div class="event-details">
-                    <p class="event-date">📅 ${formattedDate}</p>
-                    <p class="event-time">⏰ ${formattedTime}</p>
-                    <p class="event-location">📍 ${this.escapeHtml(event.location)}</p>
-                    <p class="event-description">${this.escapeHtml(event.short_description || 'Join us for this wonderful charity event!')}</p>
+                <div class="event-image-placeholder ${this.getCategoryClass(event.category_name)}">
+                    <span class="placeholder-icon">🎗️</span>
+                    <span class="placeholder-text">${this.escapeHtml(event.category_name)}</span>
+                    <span class="event-category ${this.getCategoryClass(event.category_name)}">
+                        ${this.escapeHtml(event.category_name)}
+                    </span>
                 </div>
-                <div class="event-footer">
-                    <div class="event-price">
-                        ${event.ticket_type === 'free' ? 'FREE ENTRY' : `$${event.ticket_price}`}
+                <div class="event-content">
+                    <h3>${this.escapeHtml(event.name)}</h3>
+                    <div class="event-meta">
+                        <div class="event-date">
+                            <span class="meta-icon">📅</span>
+                            ${formattedDate}
+                        </div>
+                        <div class="event-time">
+                            <span class="meta-icon">⏰</span>
+                            ${formattedTime}
+                        </div>
+                        <div class="event-location">
+                            <span class="meta-icon">📍</span>
+                            ${this.escapeHtml(event.location)}
+                        </div>
                     </div>
-                    <button class="view-details-btn" onclick="HomePage.viewEventDetails(${event.id})">
-                        View Details & Register
-                    </button>
+                    <p class="event-description">
+                        ${this.escapeHtml(event.short_description || 'Join us for this wonderful charity event!')}
+                    </p>
+                    <div class="event-footer">
+                        <div class="event-price">
+                            ${event.ticket_type === 'free' ? 'FREE ENTRY' : `$${event.ticket_price}`}
+                        </div>
+                        <button class="view-details-btn" onclick="HomePage.viewEventDetails(${event.id})">
+                            View Details & Register
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
+    }
+
+    getCategoryClass(categoryName) {
+        const classMap = {
+            'Fun Run': 'run',
+            'Gala Dinner': 'gala',
+            'Silent Auction': 'auction',
+            'Concert': 'concert',
+            'Workshop': 'workshop',
+            'Sports Tournament': 'sports',
+            'Yoga': 'yoga'
+        };
+        
+        return classMap[categoryName] || 'default';
     }
 
     static viewEventDetails(eventId) {
@@ -95,13 +128,19 @@ class HomePage {
 
     showLoading(message) {
         const container = document.getElementById('events-container');
-        container.innerHTML = `<div class="loading">${message}</div>`;
+        container.innerHTML = `
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>${message}</p>
+            </div>
+        `;
     }
 
     showError(message) {
         const container = document.getElementById('events-container');
         container.innerHTML = `
-            <div class="error">
+            <div class="error-state">
+                <div class="error-icon">❌</div>
                 <h3>Oops! Something went wrong</h3>
                 <p>${message}</p>
                 <button onclick="window.location.reload()" class="btn btn-primary">Try Again</button>
